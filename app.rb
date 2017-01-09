@@ -57,7 +57,23 @@ def calculate_rating(foursquare, yelp)
   return yelp unless foursquare
   return foursquare unless yelp
 
-  (foursquare + yelp) / 2
+  average_rating = (foursquare + yelp) / 2
+  round_rating(average_rating)
+end
+
+def round_rating(rating)
+  mod = (rating * 10.0) % 5.0
+
+  return rating if mod == 0.0
+
+  final_rating = if mod > 2.0
+                   diff = (5.0 - mod) / 10.0
+                   rating + diff
+                 else
+                   rating - (mod / 10.0)
+                 end
+
+  final_rating.round(1)
 end
 
 post '/kebabfetcher' do
@@ -72,7 +88,7 @@ post '/kebabfetcher' do
   yelp = enriched_entry[:yelp]
   puts enriched_entry
 
-  rating = calculate_rating(foursquare[:ratings][:foursquare], yelp[:ratings][:yelp]).round
+  rating = calculate_rating(foursquare[:ratings][:foursquare], yelp[:ratings][:yelp])
 
   restaurant = fetch_restaurant(enrich_params[:entry_id])
   restaurant.rating = rating if rating
