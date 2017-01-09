@@ -1,6 +1,5 @@
 require 'dotenv'
 require 'yelp'
-require 'byebug'
 require_relative 'contentful/restaurant'
 
 Dotenv.load
