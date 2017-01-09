@@ -16,9 +16,18 @@ class FoursquareImporter
     else
       venue = venues.first
       venue_details = client.venue(venue[:id], v: api_version)
+      address = if venue_details[:location] && venue_details[:location][:formattedAddress]
+                  venue_details[:location][:formattedAddress].join("\n")
+                else
+                  nil
+                end
+      tags =  venue_details[:tags].nil? ? nil : venue_details[:tags].join(', ')
       contentful_restaurant = Contentful::Restaurant.new(
         contentful_id: contentful_id,
-        ratings: { foursquare: venue_details[:rating].round.to_f / 2 } # make rating out of 5 instead of 10
+        ratings: { foursquare: venue_details[:rating].round.to_f / 2 }, # make rating out of 5 instead of 10
+        address: address,
+        website:  venue_details[:url],
+        tags: tags
       )
     end
   end
