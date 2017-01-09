@@ -94,7 +94,7 @@ post '/kebabfetcher' do
   restaurant.rating = rating if rating
   restaurant.address = foursquare[:address] if foursquare[:address]
   restaurant.website = foursquare[:website] if foursquare[:website]
-  restaurant.tags = foursquare[:tags] if foursquare[:tags].any?
+  restaurant.tags = foursquare[:tags] if foursquare[:tags]
   restaurant.pictures_list = foursquare[:photo_urls] if foursquare[:photo_urls].any?
   restaurant.save
   restaurant.publish
