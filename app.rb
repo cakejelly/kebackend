@@ -2,7 +2,7 @@ require 'json'
 require 'sinatra'
 
 require_relative 'lib/foursquare_importer'
-
+require_relative 'lib/yelp_importer'
 
 get '/' do
   'Hello world'
@@ -34,9 +34,15 @@ post '/kebabfetcher' do
   data = JSON.parse request.body.read
   puts JSON.pretty_generate(data)
   enrich_params = extract_params(data)
-  enriched_entity = FoursquareImporter.find(
+ puts enrich_params
+  entry_foursquare = FoursquareImporter.find(
     enrich_params[:entry_id], 
     enrich_params[:location],
-    enrich_params[:name])
-  puts enriched_entity
+    enrich_params[:entity_name])
+  entry_yelp = YelpImporter.find(
+    enrich_params[:entry_id], 
+    enrich_params[:location],
+    enrich_params[:entity_name])
+  puts entry_foursquare
+  puts entry_yelp
 end
