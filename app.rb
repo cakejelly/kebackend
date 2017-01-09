@@ -1,5 +1,6 @@
 require 'json'
 require 'sinatra'
+require 'contentful/management'
 
 require_relative 'lib/foursquare_importer'
 require_relative 'lib/yelp_importer'
@@ -38,7 +39,7 @@ def fetch_sources(enrich_params)
     enrich_params[:entry_id], 
     enrich_params[:location],
     enrich_params[:entity_name])
-  
+
   # Debugging
   puts entry_foursquare
   puts entry_yelp
@@ -49,7 +50,6 @@ def fetch_sources(enrich_params)
   }
 end
 
-
 post '/kebabfetcher' do
   request.body.rewind  # in case someone already read it
   data = JSON.parse request.body.read
@@ -58,5 +58,26 @@ post '/kebabfetcher' do
 
   # Enrich data
   enriched_entry = fetch_sources(enrich_params)
+  foursquare = enriched_entry[:foursquare]
+  yelp = enriched_entry[:yelp]
   puts enriched_entry
+
+  rating = ((foursquare[:ratings][:foursquare] + yelp[:ratings][:yelp]) / 2).round
+
+  restaurant = fetch_restaurant(enrich_params[:entry_id])
+  restaurant.rating = rating
+  restaurant.save
+  restaurant.publish
+end
+
+def fetch_restaurant(restaurant_id)
+  @restuarant ||= kebabful_space.entries.find(restaurant_id)
+end
+
+def kebabful_space
+  @space ||= contentful_client.spaces.find(ENV['CONTENTFUL_SPACE_ID'])
+end
+
+def contentful_client
+  @contentful ||= Contentful::Management::Client.new(ENV['CONTENTFUL_ACCESS_TOKEN'])
 end
