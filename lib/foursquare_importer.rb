@@ -28,7 +28,7 @@ class FoursquareImporter
                   nil
                 end
 
-      tags = venue_details[:tags].nil? ? nil : venue_details[:tags].join(', ')
+      tags = venue_details[:tags].nil? ? nil : venue_details[:tags].map(&:strip).join(', ')
       rating = venue_details[:rating].nil? ? nil : venue_details[:rating].round.to_f / 2
       photos = venue_details.photos.groups.first.items
       photo_urls = extract_photo_urls(photos)
