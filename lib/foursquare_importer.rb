@@ -2,8 +2,6 @@ require 'dotenv'
 require 'foursquare2'
 require_relative 'contentful/restaurant'
 
-Dotenv.load
-
 class FoursquareImporter
 
   def self.find(contentful_id = 1, location = '52.502044,13.411283', query = 'Mustafas')
