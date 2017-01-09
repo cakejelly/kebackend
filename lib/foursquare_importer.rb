@@ -16,9 +16,6 @@ class FoursquareImporter
     else
       venue = venues.first
       venue_details = client.venue(venue[:id], v: api_version)
-      puts venue_details[:rating].class
-      puts venue_details[:rating]
-      puts venue_details[:rating].round.to_f / 2
       contentful_restaurant = Contentful::Restaurant.new(
         contentful_id: contentful_id,
         ratings: { foursquare: venue_details[:rating].round.to_f / 2 } # make rating out of 5 instead of 10
