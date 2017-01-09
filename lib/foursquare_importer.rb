@@ -19,10 +19,11 @@ class FoursquareImporter
                 else
                   nil
                 end
-      tags =  venue_details[:tags].nil? ? nil : venue_details[:tags].join(', ')
+      tags = venue_details[:tags].nil? ? nil : venue_details[:tags].join(', ')
+      rating = venue_details[:rating].nil? ? nil : venue_details[:rating].round.to_f / 2
       contentful_restaurant = Contentful::Restaurant.new(
         contentful_id: contentful_id,
-        ratings: { foursquare: venue_details[:rating].round.to_f / 2 }, # make rating out of 5 instead of 10
+        ratings: { foursquare: rating }, # make rating out of 5 instead of 10
         address: address,
         website:  venue_details[:url],
         tags: tags
