@@ -18,9 +18,10 @@ class YelpImporter
       puts "No venues found for restaurant: #{query} (#{location})"
     else
       venue = result.businesses.first
+      rating = venue.rating.nil? ? nil : venue.rating
       contentful_restaurant = Contentful::Restaurant.new(
         contentful_id: contentful_id,
-        ratings: { yelp: venue.rating }
+        ratings: { yelp: rating }
       )
     end
   end
