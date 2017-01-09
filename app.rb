@@ -75,11 +75,11 @@ post '/kebabfetcher' do
   rating = calculate_rating(foursquare[:ratings][:foursquare], yelp[:ratings][:yelp]).round
 
   restaurant = fetch_restaurant(enrich_params[:entry_id])
-  restaurant.rating = rating
-  restaurant.address = foursquare[:address]
-  restaurant.website = foursquare[:website]
-  restaurant.tags = foursquare[:tags]
-  restaurant.pictures_list = foursquare[:photo_urls]
+  restaurant.rating = rating if rating
+  restaurant.address = foursquare[:address] if foursquare[:address]
+  restaurant.website = foursquare[:website] if foursquare[:website]
+  restaurant.tags = foursquare[:tags] if foursquare[:tags].any?
+  restaurant.pictures_list = foursquare[:photo_urls] if foursquare[:photo_urls].any?
   restaurant.save
   restaurant.publish
 end
