@@ -1,6 +1,8 @@
 require 'json'
+require 'sinatra'
 
-post '/' do
+
+get '/' do
   'Hello world'
 end
 
