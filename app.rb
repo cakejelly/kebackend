@@ -1,3 +1,5 @@
-post '/' do
+require 'sinatra'
+
+get '/' do
   'Hello world'
 end
