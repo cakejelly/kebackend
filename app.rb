@@ -18,6 +18,9 @@ def extract_params(content)
   lat_long = "#{lat},#{long}"
 
   entity_name = content['fields']['name']['en-US']
+  puts '*' * 32
+  puts entity_name
+  puts '*' * 32
 
   # Needed to update / enrich the entry later
   entry_id = content['sys']['id']
@@ -32,11 +35,11 @@ end
 
 def fetch_sources(enrich_params)
   entry_foursquare = FoursquareImporter.find(
-    enrich_params[:entry_id], 
+    enrich_params[:entry_id],
     enrich_params[:location],
     enrich_params[:entity_name])
   entry_yelp = YelpImporter.find(
-    enrich_params[:entry_id], 
+    enrich_params[:entry_id],
     enrich_params[:location],
     enrich_params[:entity_name])
 
