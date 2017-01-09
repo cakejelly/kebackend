@@ -50,6 +50,13 @@ def fetch_sources(enrich_params)
   }
 end
 
+def calculate_rating(foursquare, yelp)
+  return yelp unless foursquare
+  return foursquare unless yelp
+
+  (foursquare + yelp) / 2
+end
+
 post '/kebabfetcher' do
   request.body.rewind  # in case someone already read it
   data = JSON.parse request.body.read
@@ -62,10 +69,13 @@ post '/kebabfetcher' do
   yelp = enriched_entry[:yelp]
   puts enriched_entry
 
-  rating = ((foursquare[:ratings][:foursquare] + yelp[:ratings][:yelp]) / 2).round
+  rating = calculate_rating(foursquare[:ratings][:foursquare], yelp[:ratings][:yelp]).round
 
   restaurant = fetch_restaurant(enrich_params[:entry_id])
   restaurant.rating = rating
+  restaurant.address = foursquare[:address]
+  restaurant.website = foursquare[:website]
+  restaurant.pictures_list = foursquare[:photo_urls]
   restaurant.save
   restaurant.publish
 end
