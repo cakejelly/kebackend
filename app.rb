@@ -29,12 +29,7 @@ def extract_params(content)
   }
 end
 
-post '/kebabfetcher' do
-  request.body.rewind  # in case someone already read it
-  data = JSON.parse request.body.read
-  puts JSON.pretty_generate(data)
-  enrich_params = extract_params(data)
- puts enrich_params
+def fetch_sources(enrich_params)
   entry_foursquare = FoursquareImporter.find(
     enrich_params[:entry_id], 
     enrich_params[:location],
@@ -43,6 +38,25 @@ post '/kebabfetcher' do
     enrich_params[:entry_id], 
     enrich_params[:location],
     enrich_params[:entity_name])
+  
+  # Debugging
   puts entry_foursquare
   puts entry_yelp
+
+  {
+    foursquare: entry_foursquare,
+    yelp: entry_yelp
+  }
+end
+
+
+post '/kebabfetcher' do
+  request.body.rewind  # in case someone already read it
+  data = JSON.parse request.body.read
+  puts JSON.pretty_generate(data)
+  enrich_params = extract_params(data)
+
+  # Enrich data
+  enriched_entry = fetch_sources(enrich_params)
+  puts enriched_entry
 end
