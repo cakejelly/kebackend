@@ -75,6 +75,7 @@ post '/kebabfetcher' do
   restaurant.rating = rating
   restaurant.address = foursquare[:address]
   restaurant.website = foursquare[:website]
+  restaurant.tags = foursquare[:tags]
   restaurant.pictures_list = foursquare[:photo_urls]
   restaurant.save
   restaurant.publish
