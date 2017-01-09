@@ -5,32 +5,35 @@ require_relative 'contentful/restaurant'
 
 Dotenv.load
 
-def foursquare_credentials
-  {
-    client_id: ENV['FOURSQUARE_CLIENT_ID'],
-    client_secret: ENV['FOURSQUARE_CLIENT_SECRET']
-  }
-end
+class FoursquareImporter
 
-def api_version
-  ENV['FOURSQUARE_VERSION']
-end
+  def self.find(location = '52.502044,13.411283', query = 'Mustafas')
+    client = Foursquare2::Client.new(foursquare_credentials)
 
+    results = client.search_venues(ll: location, query: query, v: api_version)
 
-client = Foursquare2::Client.new(foursquare_credentials)
+    venues = results[:venues]
 
-location = '52.502044,13.411283'
-restaurant_name = 'Mustafas'
+    if venues.empty?
+      puts "No venues found for restaurant: #{query} (#{location})"
+    else
+      venue = venues.first
+      puts venue.to_hash
+      venue_details = client.venue(venue[:id], v: api_version)
+      contentful_restaurant = Contentful::Restaurant.new(contentful_id: 1, ratings: { foursquare: venue_details[:rating] })
+    end
+  end
 
-results = client.search_venues(ll: location, query: restaurant_name, v: api_version)
+  private
 
-venues = results[:venues]
+  def self.foursquare_credentials
+    {
+      client_id: ENV['FOURSQUARE_CLIENT_ID'],
+      client_secret: ENV['FOURSQUARE_CLIENT_SECRET']
+    }
+  end
 
-if venues.empty?
-  puts "No venues found for restaurant: #{restaurant_name} (#{location})"
-else
-  venue = venues.first
-  puts venue.to_hash
-  venue_details = client.venue(venue[:id], v: api_version)
-  contentful_restaurant = Contentful::Restaurant.new(contentful_id: 1, ratings: { foursquare: venue_details[:rating] })
+  def self.api_version
+    ENV['FOURSQUARE_VERSION']
+  end
 end
