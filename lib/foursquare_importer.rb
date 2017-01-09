@@ -7,7 +7,7 @@ Dotenv.load
 
 class FoursquareImporter
 
-  def self.find(location = '52.502044,13.411283', query = 'Mustafas')
+  def self.find(contentful_id = 1, location = '52.502044,13.411283', query = 'Mustafas')
     client = Foursquare2::Client.new(foursquare_credentials)
 
     results = client.search_venues(ll: location, query: query, v: api_version)
@@ -20,7 +20,10 @@ class FoursquareImporter
       venue = venues.first
       puts venue.to_hash
       venue_details = client.venue(venue[:id], v: api_version)
-      contentful_restaurant = Contentful::Restaurant.new(contentful_id: 1, ratings: { foursquare: venue_details[:rating] })
+      contentful_restaurant = Contentful::Restaurant.new(
+        contentful_id: contentful_id,
+        ratings: { foursquare: venue_details[:rating] }
+      )
     end
   end
 
